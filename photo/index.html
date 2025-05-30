@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片库 | 自动加载</title>
+    <title>图片库自动加载</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #4361ee;
-            --secondary: #3f37c9;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
@@ -34,7 +33,7 @@
         }
         
         header {
-            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            background: linear-gradient(120deg, #4361ee, #3f37c9);
             color: white;
             padding: 3rem 1.5rem;
             text-align: center;
@@ -139,32 +138,6 @@
             color: var(--gray);
         }
         
-        .filter-section {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .filter-btn {
-            background: white;
-            border: 2px solid var(--light-gray);
-            padding: 0.5rem 1.25rem;
-            border-radius: 30px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .filter-btn:hover, .filter-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.25);
-        }
-        
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -179,6 +152,13 @@
             transition: var(--transition);
             transform: translateY(0);
             position: relative;
+            animation: fadeIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .image-card:hover {
@@ -211,23 +191,6 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-        
-        .image-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        
-        .image-type {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--light-gray);
-            padding: 0.2rem 0.5rem;
-            border-radius: 5px;
-            font-size: 0.8rem;
         }
         
         .preview-overlay {
@@ -263,6 +226,7 @@
             max-height: 80vh;
             object-fit: contain;
             border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         
         .close-btn {
@@ -327,7 +291,7 @@
         
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #5e72e4);
+            background: linear-gradient(90deg, #4361ee, #5e72e4);
             width: 0;
             transition: width 0.4s ease;
             border-radius: 50px;
@@ -346,7 +310,7 @@
             width: 50px;
             height: 50px;
             border: 5px solid var(--light-gray);
-            border-top: 5px solid var(--primary);
+            border-top: 5px solid #4361ee;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1.5rem;
@@ -364,7 +328,7 @@
         
         .image-counter {
             font-weight: 700;
-            color: var(--primary);
+            color: #4361ee;
         }
         
         .no-images {
@@ -393,6 +357,17 @@
             background: rgba(255, 255, 255, 0.7);
         }
         
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate-on-scroll.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         @media (max-width: 992px) {
             .gallery {
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -417,10 +392,6 @@
             }
             
             .stats {
-                justify-content: center;
-            }
-            
-            .filter-section {
                 justify-content: center;
             }
             
@@ -451,15 +422,6 @@
                 height: 160px;
             }
             
-            .filter-btn span {
-                display: none;
-            }
-            
-            .filter-btn {
-                padding: 0.6rem;
-                border-radius: 50%;
-            }
-            
             h1 {
                 font-size: 2rem;
             }
@@ -474,8 +436,8 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>图片资源</h1>
-            <p class="subtitle">点击缩略图可查看大图</p>
+            <h1>图片库自动加载</h1>
+            <p class="subtitle">此页面自动加载并展示指定目录中的所有图片文件，点击缩略图可查看大图</p>
             <div class="folder-path">
                 <i class="fas fa-folder"></i>
                 <span>https://hhh3mmm.github.io/photo/</span>
@@ -494,34 +456,15 @@
         </div>
 
         <div class="gallery-container">
-            <div class="gallery-header">
+            <div class="gallery-header animate-on-scroll">
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-number" id="totalImages">24</div>
+                        <div class="stat-number" id="totalImages">8</div>
                         <div class="stat-label">图片总数</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="totalSize">64.2</div>
-                        <div class="stat-label">总大小 (MB)</div>
-                    </div>
-                </div>
-                
-                <div class="filter-section">
-                    <div class="filter-btn active">
-                        <i class="fas fa-th"></i>
-                        <span>全部</span>
-                    </div>
-                    <div class="filter-btn">
-                        <i class="fas fa-mountain"></i>
-                        <span>自然</span>
-                    </div>
-                    <div class="filter-btn">
-                        <i class="fas fa-city"></i>
-                        <span>城市</span>
-                    </div>
-                    <div class="filter-btn">
-                        <i class="fas fa-camera"></i>
-                        <span>人物</span>
+                        <div class="stat-number">0.7s</div>
+                        <div class="stat-label">加载时间</div>
                     </div>
                 </div>
             </div>
@@ -548,70 +491,65 @@
     </div>
 
     <footer>
-        <p>hhh3m's photo library</p>
+        <p>© 2023 图片库浏览器 | 自动加载并展示指定目录中的所有图片</p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 模拟从指定目录加载图片
+            // 图片目录和文件列表
+            const photoDir = 'https://hhh3mmm.github.io/photo/';
+            const imageFiles = [
+                {name: "头像.png"},
+                {name: "窗边.png"},
+                {name: "蕾姆.png"},
+                {name: "动漫少女.png"},
+                {name: "夜景.png"},
+                {name: "天空.png"},
+                {name: "小新.png"},
+                {name: "炫彩.jpeg"}
+            ];
+            
+            // DOM元素引用
             const imageGallery = document.getElementById('imageGallery');
             const loadingSection = document.getElementById('loadingSection');
             const progressBar = document.getElementById('progressBar');
             const loadedCount = document.getElementById('loadedCount');
             const totalImages = document.getElementById('totalImages');
-            const totalSize = document.getElementById('totalSize');
             const previewOverlay = document.getElementById('previewOverlay');
             const previewImage = document.getElementById('previewImage');
             const closePreview = document.getElementById('closePreview');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
-            // 模拟不同目录的图片文件
-            const photoDir = 'https://hhh3mmm.github.io/photo/';
-            const imageFiles = [
-                {name: "touxiang.png"},
-                {name: "【哲风壁纸】Al-AI风景.png"},
-                {name: "蕾姆.png"},
-                {name: "动漫少女.png"},
-                {name: "夜景.png"},
-                {name: "天空.png"},
-                {name: "小新.png"},
-                {name: "炫彩jpeg"},
-                
-            ];
-            
-            // 设置统计信息
+            // 设置图片总数
             totalImages.textContent = imageFiles.length;
-            const totalSizeMB = imageFiles.reduce((acc, file) => acc + file.size, 0);
-            totalSize.textContent = totalSizeMB.toFixed(1);
+            
+            // 图片加载进度
+            let loaded = 0;
+            const total = imageFiles.length;
             
             // 加载图片的函数
             function loadImages() {
-                let loaded = 0;
-                const total = imageFiles.length;
                 const delay = 100; // 模拟加载延迟
                 
                 imageFiles.forEach((file, index) => {
                     setTimeout(() => {
-                        // 使用不同的图片服务来获取不同类别的图片
-                        let imgUrl;
+                        // 构造图片URL
+                        const imgUrl = photoDir + encodeURIComponent(file.name);
                         
                         // 创建图片卡片
                         const card = document.createElement('div');
                         card.className = 'image-card';
-                        card.dataset.type = file.type;
                         
                         card.innerHTML = `
                             <img src="${imgUrl}" alt="${file.name}" class="thumbnail">
                             <div class="image-info">
                                 <div class="image-name">${file.name}</div>
-                                <div class="image-meta">
-                                    <div class="image-size">${file.size.toFixed(1)} MB</div>
-                                    
-                                </div>
                             </div>
                         `;
                         
+                        // 为每个卡片设置延迟动画
+                        card.style.animationDelay = `${index * 0.1}s`;
                         imageGallery.appendChild(card);
                         
                         // 添加点击事件
@@ -628,6 +566,8 @@
                         if (loaded === total) {
                             setTimeout(() => {
                                 loadingSection.style.display = 'none';
+                                // 添加滚动动画
+                                initScrollAnimations();
                             }, 500);
                         }
                     }, index * delay);
@@ -640,9 +580,7 @@
             function openPreview(index) {
                 currentIndex = index;
                 const file = imageFiles[currentIndex];
-                
-                let imgUrl;
-                
+                const imgUrl = photoDir + encodeURIComponent(file.name);
                 
                 previewImage.src = imgUrl;
                 previewOverlay.classList.add('active');
@@ -674,6 +612,23 @@
                     closePreview.click();
                 }
             });
+            
+            // 滚动动画
+            function initScrollAnimations() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                        }
+                    });
+                }, {
+                    threshold: 0.1
+                });
+                
+                document.querySelectorAll('.animate-on-scroll').forEach(element => {
+                    observer.observe(element);
+                });
+            }
             
             // 开始加载图片
             loadImages();
