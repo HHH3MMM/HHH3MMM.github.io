@@ -347,6 +347,15 @@
             opacity: 0.6;
         }
         
+        .error-message {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
         footer {
             text-align: center;
             padding: 2.5rem 1rem;
@@ -459,11 +468,11 @@
             <div class="gallery-header animate-on-scroll">
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-number" id="totalImages">8</div>
+                        <div class="stat-number" id="totalImages">0</div>
                         <div class="stat-label">图片总数</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">0.7s</div>
+                        <div class="stat-number" id="loadTime">0s</div>
                         <div class="stat-label">加载时间</div>
                     </div>
                 </div>
@@ -496,81 +505,136 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 图片目录和文件列表
-            const photoDir = 'https://hhh3mmm.github.io/photo/';
-            const imageFiles = [
-                {name: "头像.png"},
-                {name: "窗边.png"},
-                {name: "蕾姆.png"},
-                {name: "动漫少女.png"},
-                {name: "夜景.png"},
-                {name: "天空.png"},
-                {name: "小新.png"},
-                {name: "炫彩.jpeg"}
-            ];
-            
             // DOM元素引用
             const imageGallery = document.getElementById('imageGallery');
             const loadingSection = document.getElementById('loadingSection');
             const progressBar = document.getElementById('progressBar');
             const loadedCount = document.getElementById('loadedCount');
             const totalImages = document.getElementById('totalImages');
+            const loadTimeElement = document.getElementById('loadTime');
             const previewOverlay = document.getElementById('previewOverlay');
             const previewImage = document.getElementById('previewImage');
             const closePreview = document.getElementById('closePreview');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             
-            // 设置图片总数
-            totalImages.textContent = imageFiles.length;
+            // 图片目录
+            const photoDir = 'https://hhh3mmm.github.io/photo/';
+            let imageFiles = [];
+            let startTime = Date.now();
             
-            // 图片加载进度
-            let loaded = 0;
-            const total = imageFiles.length;
+            // 获取图片列表的函数
+            async function fetchImageList() {
+                try {
+                    // 使用GitHub API获取目录内容
+                    const response = await fetch('https://api.github.com/repos/HHH3MMM/HHH3MMM.github.io/contents/photo');
+                    
+                    if (!response.ok) {
+                        throw new Error(`GitHub API请求失败: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // 过滤出图片文件
+                    return data.filter(item => {
+                        const extension = item.name.split('.').pop().toLowerCase();
+                        return ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(extension);
+                    }).map(item => ({
+                        name: item.name,
+                        url: item.download_url
+                    }));
+                } catch (error) {
+                    console.error('获取图片列表失败:', error);
+                    
+                    // 显示错误信息
+                    loadingSection.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>加载图片库失败</h3>
+                            <p>${error.message}</p>
+                            <p>请确保仓库是公开的并且目录路径正确</p>
+                        </div>
+                    `;
+                    
+                    return [];
+                }
+            }
             
             // 加载图片的函数
-            function loadImages() {
-                const delay = 100; // 模拟加载延迟
+            function loadImages(imageList) {
+                const total = imageList.length;
+                let loaded = 0;
                 
-                imageFiles.forEach((file, index) => {
-                    setTimeout(() => {
-                        // 构造图片URL
-                        const imgUrl = photoDir + encodeURIComponent(file.name);
-                        
-                        // 创建图片卡片
-                        const card = document.createElement('div');
-                        card.className = 'image-card';
-                        
-                        card.innerHTML = `
-                            <img src="${imgUrl}" alt="${file.name}" class="thumbnail">
-                            <div class="image-info">
-                                <div class="image-name">${file.name}</div>
-                            </div>
-                        `;
-                        
-                        // 为每个卡片设置延迟动画
-                        card.style.animationDelay = `${index * 0.1}s`;
-                        imageGallery.appendChild(card);
-                        
-                        // 添加点击事件
-                        card.querySelector('.thumbnail').addEventListener('click', function() {
-                            openPreview(index);
-                        });
-                        
-                        // 更新加载进度
+                // 更新图片总数
+                totalImages.textContent = total;
+                
+                if (total === 0) {
+                    imageGallery.innerHTML = `<div class="no-images">
+                        <i class="fas fa-image"></i>
+                        <h3>图片库为空</h3>
+                        <p>请上传图片到photo目录</p>
+                    </div>`;
+                    loadingSection.style.display = 'none';
+                    return;
+                }
+                
+                imageList.forEach((file, index) => {
+                    // 创建图片卡片
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    
+                    card.innerHTML = `
+                        <img src="${file.url}" alt="${file.name}" class="thumbnail">
+                        <div class="image-info">
+                            <div class="image-name">${file.name}</div>
+                        </div>
+                    `;
+                    
+                    // 为每个卡片设置延迟动画
+                    card.style.animationDelay = `${index * 0.1}s`;
+                    imageGallery.appendChild(card);
+                    
+                    // 添加点击事件
+                    card.querySelector('.thumbnail').addEventListener('click', function() {
+                        openPreview(index);
+                    });
+                    
+                    // 监听图片加载完成
+                    const img = card.querySelector('img');
+                    img.onload = function() {
                         loaded++;
                         loadedCount.textContent = loaded;
                         progressBar.style.width = `${(loaded / total) * 100}%`;
                         
                         // 隐藏加载状态
                         if (loaded === total) {
+                            const endTime = Date.now();
+                            const loadTime = (endTime - startTime) / 1000;
+                            loadTimeElement.textContent = `${loadTime.toFixed(1)}s`;
+                            
                             setTimeout(() => {
                                 loadingSection.style.display = 'none';
                                 // 添加滚动动画
                                 initScrollAnimations();
                             }, 500);
                         }
-                    }, index * delay);
+                    };
+                    
+                    // 处理图片加载错误
+                    img.onerror = function() {
+                        console.error(`图片加载失败: ${file.url}`);
+                        card.querySelector('.thumbnail').src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><text x="50" y="50" font-family="Arial" font-size="10" fill="%23999" text-anchor="middle" dominant-baseline="middle">图片加载失败</text></svg>';
+                        loaded++;
+                        loadedCount.textContent = loaded;
+                        progressBar.style.width = `${(loaded / total) * 100}%`;
+                        
+                        if (loaded === total) {
+                            setTimeout(() => {
+                                loadingSection.style.display = 'none';
+                                initScrollAnimations();
+                            }, 500);
+                        }
+                    };
                 });
             }
             
@@ -580,9 +644,8 @@
             function openPreview(index) {
                 currentIndex = index;
                 const file = imageFiles[currentIndex];
-                const imgUrl = photoDir + encodeURIComponent(file.name);
                 
-                previewImage.src = imgUrl;
+                previewImage.src = file.url;
                 previewOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
@@ -630,8 +693,15 @@
                 });
             }
             
+            // 初始化图片库
+            async function initGallery() {
+                startTime = Date.now();
+                imageFiles = await fetchImageList();
+                loadImages(imageFiles);
+            }
+            
             // 开始加载图片
-            loadImages();
+            initGallery();
         });
     </script>
 </body>
