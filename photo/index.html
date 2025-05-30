@@ -474,8 +474,8 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>图片库自动加载</h1>
-            <p class="subtitle">此页面自动加载并展示指定目录中的所有图片文件，点击缩略图可查看大图</p>
+            <h1>图片资源</h1>
+            <p class="subtitle">点击缩略图可查看大图</p>
             <div class="folder-path">
                 <i class="fas fa-folder"></i>
                 <span>https://hhh3mmm.github.io/photo/</span>
@@ -548,7 +548,7 @@
     </div>
 
     <footer>
-        <p>© 2023 图片库浏览器 | 自动加载并展示指定目录中的所有图片</p>
+        <p>hhh3m's photo library</p>
     </footer>
 
     <script>
@@ -569,14 +569,14 @@
             // 模拟不同目录的图片文件
             const photoDir = 'https://hhh3mmm.github.io/photo/';
             const imageFiles = [
-                {name: "touxiang.png", size: 3.2},
-                {name: "【哲风壁纸】Al-AI风景.png", size: 2.8},
-                {name: "自然风景-07.jpg", size: 4.1},
-                {name: "动漫少女.png", size: 1.9},
-                {name: "夜景.png", size: 3.5},
-                {name: "天空.png", size: 3.9},
-                {name: "小新.png", size: 2.5},
-                {name: "炫彩jpeg", size: 2.1},
+                {name: "touxiang.png"},
+                {name: "【哲风壁纸】Al-AI风景.png"},
+                {name: "蕾姆.png"},
+                {name: "动漫少女.png"},
+                {name: "夜景.png"},
+                {name: "天空.png"},
+                {name: "小新.png"},
+                {name: "炫彩jpeg"},
                 
             ];
             
@@ -595,13 +595,6 @@
                     setTimeout(() => {
                         // 使用不同的图片服务来获取不同类别的图片
                         let imgUrl;
-                        if (file.type === "自然") {
-                            imgUrl = `https://source.unsplash.com/random/600x400/?nature&sig=${index}`;
-                        } else if (file.type === "城市") {
-                            imgUrl = `https://source.unsplash.com/random/600x400/?city&sig=${index}`;
-                        } else {
-                            imgUrl = `https://source.unsplash.com/random/600x400/?portrait&sig=${index}`;
-                        }
                         
                         // 创建图片卡片
                         const card = document.createElement('div');
@@ -614,10 +607,7 @@
                                 <div class="image-name">${file.name}</div>
                                 <div class="image-meta">
                                     <div class="image-size">${file.size.toFixed(1)} MB</div>
-                                    <div class="image-type">
-                                        <i class="fas fa-${file.type === '自然' ? 'mountain' : file.type === '城市' ? 'city' : 'camera'}"></i>
-                                        ${file.type}
-                                    </div>
+                                    
                                 </div>
                             </div>
                         `;
@@ -652,13 +642,7 @@
                 const file = imageFiles[currentIndex];
                 
                 let imgUrl;
-                if (file.type === "自然") {
-                    imgUrl = `https://source.unsplash.com/random/1000x700/?nature&sig=${index}`;
-                } else if (file.type === "城市") {
-                    imgUrl = `https://source.unsplash.com/random/1000x700/?city&sig=${index}`;
-                } else {
-                    imgUrl = `https://source.unsplash.com/random/1000x700/?portrait&sig=${index}`;
-                }
+                
                 
                 previewImage.src = imgUrl;
                 previewOverlay.classList.add('active');
