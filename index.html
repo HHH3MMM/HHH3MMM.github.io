@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>hhh3m's blog</title>
     <style>
+        /* 基础样式 */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -12,36 +13,158 @@
             margin: 0 auto;
             padding: 20px;
             color: #333;
+            position: relative;
+            min-height: 100vh;
         }
+        
+        /* 背景图片设置 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https:/hhh3mmm.github.io/photo/蕾姆.png') no-repeat center center;
+            background-size: cover;
+            filter: blur(3px) brightness(0.7);
+            z-index: -1;
+        }
+        
+        /* 内容容器 */
+        .content-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* 七彩炫光标题 */
         h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            position: relative;
+            background: linear-gradient(90deg, 
+                #ff0000, #ff8000, #ffff00, 
+                #80ff00, #00ff80, #00ffff, 
+                #0080ff, #0000ff, #8000ff, 
+                #ff00ff, #ff0080, #ff0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 300% 300%;
+            animation: rainbow 4s ease infinite;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+        
+        /* 链接样式 */
         a {
             color: #3498db;
             text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            position: relative;
         }
+        
         a:hover {
-            text-decoration: underline;
+            color: #e74c3c;
+            text-decoration: none;
         }
-        .image-container {
-            text-align: center;
-            margin: 20px 0;
+        
+        a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #e74c3c;
+            transition: width 0.3s ease;
         }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
+        
+        a:hover::after {
+            width: 100%;
+        }
+        
+        /* 链接容器 */
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .link-item {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .link-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* 动画效果 */
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>博客</h1>
-
-    <p><a href="https://hhh3mmm.github.io/photo/">图片资源</a></p>
-    
-    <p>访问我的 <a href="https://github.com/HHH3MMM" target="_blank">GitHub</a> 主页</p>
-    
+    <div class="content-container">
+        <h1>我的个人博客</h1>
+        
+        <div class="links-container">
+            <div class="link-item">
+                <a href="https://hhh3mmm.github.io/photo/">图片资源</a>
+            </div>
+            
+            <div class="link-item">
+                <p>访问我的 <a href="https://github.com/HHH3MMM" target="_blank">GitHub</a> 主页</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
